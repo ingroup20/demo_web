@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         servers: [ubuntu-latest, self-hosted]
-      runs-on: ${{ matrix.servers }}
+    runs-on: ${{ matrix.servers }}
 
     steps:
       - name: Checkout the code
