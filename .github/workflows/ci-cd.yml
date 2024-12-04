@@ -6,6 +6,7 @@ on:
       - main  # 針對主分支的推送觸發工作流程
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
 
@@ -17,6 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: ''
 
       - name: Install dependencies
         run: ./mvnw clean install
@@ -34,10 +36,18 @@ jobs:
     steps:
       - name: Deploy to server
         env:
-          HOST: ${{ secrets.HOST }}        # 伺服器 IP 或域名
-          USER: ${{ secrets.USER }}        # SSH 使用者
-          PASSWORD: ${{ secrets.PASSWORD }} # SSH 密碼或金鑰
+          HOST: ${{ secrets.HOST }}
+          USER: ${{ secrets.USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # 套用固定的私鑰路徑，則刪除ex. /github/ssh/key
         run: |
-          sshpass -p $PASSWORD ssh $USER@$HOST 'mkdir -p /var/www/myapp'
-          sshpass -p $PASSWORD scp target/myapp.jar $USER@$HOST:/var/www/myapp
-          sshpass -p $PASSWORD ssh $USER@$HOST 'cd /var/www/myapp && nohup java -jar myapp.jar &'
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa # 將私鑰複製到預設位置
+#           cp /github/ssh/key ~/.ssh/id_rsa  # 將私鑰複製到預設位置
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no $USER@$HOST '
+            pkill -f myapp.jar || true;
+            mkdir -p /var/www/myapp;
+          '
+          scp target/myapp.jar $USER@$HOST:/var/www/myapp
+          ssh $USER@$HOST '
+            cd /var/www/myapp && nohup java -jar myapp.jar > myapp.log 2>&1 &
