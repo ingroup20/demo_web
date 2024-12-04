@@ -3,10 +3,30 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # 針對主分支的推送觸發工作流程
+      -feature/*  # 自動合併監聽 `feature/` 開頭的分支推送事件
+
 
 jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Auto merge branch into main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch origin main
+          git checkout main
+          git merge --no-ff ${{ github.ref_name }}
+          git push origin main
   build:
     runs-on: ubuntu-latest
 
