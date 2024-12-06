@@ -1,11 +1,47 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main  # 針對主分支的推送觸發工作流程
+  workflow_dispatch:
+    inputs:
+      branch:
+        name:
+          description: -feature/*
+          required: true
+          default: 'release'
+#  push:
+#    branches:
+#      -feature/*  # 自動合併監聽 `feature/` 開頭的分支推送事件
+
 
 jobs:
+  auto-merge:
+    strategy:
+      matrix:
+        servers: [ ubuntu-latest, self-hosted ]
+      runs-on: ${{matrix.servers}}
+
+#    runs-on: ubuntu-latest
+#    runs-on: self-hosted  # 使用自託管執行器
+#    labels: # 使用執行器的標籤（可選）
+#        - label-test        # 您在設定執行器時輸入的標籤
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Auto merge branch into main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch origin main
+          git checkout main
+          git merge --no-ff ${{ github.ref_name }}
+          git push origin main
   build:
     runs-on: ubuntu-latest
 
@@ -17,6 +53,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: ''
 
       - name: Install dependencies
         run: ./mvnw clean install
@@ -27,17 +64,25 @@ jobs:
       - name: Package application
         run: ./mvnw package
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build  # 等待 build 任務完成後執行
-
-    steps:
-      - name: Deploy to server
-        env:
-          HOST: ${{ secrets.HOST }}        # 伺服器 IP 或域名
-          USER: ${{ secrets.USER }}        # SSH 使用者
-          PASSWORD: ${{ secrets.PASSWORD }} # SSH 密碼或金鑰
-        run: |
-          sshpass -p $PASSWORD ssh $USER@$HOST 'mkdir -p /var/www/myapp'
-          sshpass -p $PASSWORD scp target/myapp.jar $USER@$HOST:/var/www/myapp
-          sshpass -p $PASSWORD ssh $USER@$HOST 'cd /var/www/myapp && nohup java -jar myapp.jar &'
+#  deploy:
+#    runs-on: ubuntu-latest
+#    needs: build  # 等待 build 任務完成後執行
+#
+#    steps:
+#      - name: Deploy to server
+#        env:
+#          HOST: ${{ secrets.HOST }}
+#          USER: ${{ secrets.USER }}
+#          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # 套用固定的私鑰路徑，則刪除ex. /github/ssh/key
+#        run: |
+#          mkdir -p ~/.ssh
+#          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa # 將私鑰複製到預設位置
+##           cp /github/ssh/key ~/.ssh/id_rsa  # 將私鑰複製到預設位置
+#          chmod 600 ~/.ssh/id_rsa
+#          ssh -o StrictHostKeyChecking=no $USER@$HOST '
+#            pkill -f myapp.jar || true;
+#            mkdir -p /var/www/myapp;
+#          '
+#          scp target/myapp.jar $USER@$HOST:/var/www/myapp
+#          ssh $USER@$HOST '
+#            cd /var/www/myapp && nohup java -jar myapp.jar > myapp.log 2>&1 &
