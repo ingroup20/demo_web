@@ -73,6 +73,12 @@
             <version>2.0.16</version>
         </dependency>
 
+        <!--        熱部署模組，修改檔案後，可以立刻重新啟動應用-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
 
 <!--        #############    ↑管理性依賴  ##########################-->
 
@@ -85,7 +91,13 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
 <!--        #############    ↑功能性依賴  ##########################-->
+
 
 
     </dependencies>
@@ -104,6 +116,10 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+<!--           以上為基礎-->
+
+<!--          以上  解決java 9以上版本的模塊安全限制，禁止模塊映射-->
         </plugins>
     </build>
 
