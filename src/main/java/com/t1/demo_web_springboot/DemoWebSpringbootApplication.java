@@ -9,6 +9,7 @@ public class DemoWebSpringbootApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoWebSpringbootApplication.class, args);
         System.out.println("Hello, Spring Boot!");
+
     }
 
 }
