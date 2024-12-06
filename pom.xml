@@ -64,9 +64,28 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-<!--  ##################      以上基礎依賴    #########################-->
+<!--  ##################      ↑以上基礎依賴    #########################-->
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.16</version>
+        </dependency>
 
 
+<!--        #############    ↑管理性依賴  ##########################-->
+
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
+
+<!--        #############    ↑功能性依賴  ##########################-->
 
 
     </dependencies>
