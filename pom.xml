@@ -80,7 +80,7 @@
             <optional>true</optional>
         </dependency>
 
-<!--        #############    ↑管理性依賴  ##########################-->
+<!--        #############    ↑管理性依賴  ###############################-->
 
 
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail -->
@@ -96,7 +96,17 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-<!--        #############    ↑功能性依賴  ##########################-->
+<!--        rabbitMQ spring框架用-->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
+
+
+        <!--        #############    ↑功能性依賴  ##############################-->
 
 
 

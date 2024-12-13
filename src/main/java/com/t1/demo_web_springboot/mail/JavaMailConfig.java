@@ -4,12 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
-@Configurable
+@Configuration
 public class JavaMailConfig {
 
     protected static Logger logger = LogManager.getLogger(JavaMailConfig.class);
@@ -17,7 +19,8 @@ public class JavaMailConfig {
     @Autowired
     private Environment env;
 
-    public JavaMailSenderImpl getJavaMailSender() {
+    @Bean
+    public JavaMailSenderImpl javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
         //get from Properties
@@ -25,7 +28,7 @@ public class JavaMailConfig {
         Integer port = Integer.parseInt(env.getProperty("spring.mail.port"));
         String userName = env.getProperty("spring.mail.username");
         String password = env.getProperty("spring.mail.password");
-        String transportProtocol = env.getProperty("spring.mail.protocol") == null ? "smtp"
+        String transportProtocol = env.getProperty("spring.mail.protocol") == null || env.getProperty("spring.mail.protocol").equals("") ? "smtp"
                 : env.getProperty("spring.mail.protocol");
         String smtpAuth = env.getProperty("spring.mail.smtp.auth");
         String starttlsEnable = env.getProperty("spring.mail.smtp.starttls.enable");
